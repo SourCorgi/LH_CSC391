@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <title>Fishbowl</title>
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-
 <script>
 //Fishbowl
 AFRAME.registerComponent('boid-fish', {
@@ -27,7 +26,6 @@ AFRAME.registerComponent('boid-fish', {
     const alignment = new V3(); 
     const separation = new V3();
     let neighborCount = 0;
-
     this.fishes.forEach(fish => {
       if (fish === this.el) return;
       const fPos = fish.object3D.position;
@@ -39,12 +37,10 @@ AFRAME.registerComponent('boid-fish', {
         neighborCount++;
       }
     });
-
     if (neighborCount > 0) {
       cohesion.divideScalar(neighborCount).sub(pos).multiplyScalar(0.02);
       alignment.divideScalar(neighborCount).normalize().multiplyScalar(0.05);
     }
-
     const toCenter = this.center.clone().sub(pos).multiplyScalar(0.01);
     const random = new V3((Math.random()-0.5)*0.01,(Math.random()-0.5)*0.005,(Math.random()-0.5)*0.01);
     this.velocity.add(cohesion).add(alignment).add(separation).add(toCenter).add(random);
@@ -85,19 +81,16 @@ AFRAME.registerComponent('boid-fish', {
     if(this.velocity.y<0) this.velocity.y=Math.abs(this.velocity.y)*0.5;
     }
     pos.add(this.velocity.clone().multiplyScalar(delta/1000));
-
     const targetRotY = Math.atan2(this.velocity.x, this.velocity.z);
     const targetRotX = Math.atan2(this.velocity.y, this.velocity.z);
     this.el.object3D.rotation.y += (targetRotY - this.el.object3D.rotation.y) * this.maxTurn;
     this.el.object3D.rotation.x += (targetRotX - this.el.object3D.rotation.x) * this.maxTurn;
-
     //Tail Animation
     if (this.tailEl && this.tailEl.object3D) {
       this.tailEl.object3D.rotation.z = Math.sin(time / 150) * 0.5;
     }
   }
 });
-
 //FishSpawner
 AFRAME.registerComponent('fish-spawner',{
   schema:{count:{default:50},species:{default:'orange'},speed:{default:0.5}},
@@ -106,13 +99,11 @@ AFRAME.registerComponent('fish-spawner',{
       const fish=document.createElement('a-entity');
       fish.setAttribute('boid-fish',`species:${this.data.species};speed:${this.data.speed}`);
       fish.setAttribute('position',`${Math.random()*1.2-0.6} ${1+Math.random()*0.4} ${Math.random()*1.2-0.6}`);
-
       const body=document.createElement('a-sphere');
       let radius=0.03; if(this.data.species==='blue') radius=0.025; if(this.data.species==='purple') radius=0.03;
       body.setAttribute('radius',radius);
       body.setAttribute('color',this.data.species==='orange'?'#ffaa33':this.data.species==='blue'?'#33aaff':'#ab47bc');
       fish.appendChild(body);
-
       const tail=document.createElement('a-cone');
       let tailH=0.04; if(this.data.species==='blue') tailH=0.035; if(this.data.species==='purple') tailH=0.04;
       tail.setAttribute('radius-bottom',0.02);
@@ -124,7 +115,6 @@ AFRAME.registerComponent('fish-spawner',{
       //Swim Animation
       tail.setAttribute('class','fish-tail');
       fish.appendChild(tail);
-
       const eye=document.createElement('a-sphere');
       eye.setAttribute('radius',0.005);
       eye.setAttribute('color','#000000');
@@ -135,7 +125,6 @@ AFRAME.registerComponent('fish-spawner',{
     }
   }
 });
-
 //Cat Behavior
 AFRAME.registerComponent('cat-roamer',{
   schema:{radius:{default:2},speed:{default:0.5},pauseTime:{default:2000}},
@@ -170,51 +159,39 @@ AFRAME.registerComponent('cat-roamer',{
 </head>
 <body>
 <a-scene shadow="type:pcfsoft" background="color:#cfefff">
-
   <!-- Sky -->
   <a-sky color="#cfefff"></a-sky>
-
   <!-- Camera -->
   <a-entity position="0 2.5 6">
     <a-camera wasd-controls-enabled="true"></a-camera>
   </a-entity>
-
-  <!-- Lights -->
+  <!-- Lighting -->
   <a-light type="ambient" intensity="0.6"></a-light>
   <a-light type="directional" position="3 6 3" intensity="1" cast-shadow="true"></a-light>
-
   <!-- Floor -->
   <a-plane rotation="-90 0 0" width="6" height="6" color="#dcd0c0" shadow="receive:true"></a-plane>
-
   <!-- Rug -->
   <a-plane position="0 0.01 0" rotation="-90 0 0" width="2" height="1" color="#ffddaa" shadow="receive:true"></a-plane>
-
   <!-- Walls -->
   <a-box position="0 1.5 -3" depth="0.1" height="3" width="6" color="#f2e0d0" shadow="receive:true"></a-box>
   <a-box position="-3 1.5 0" rotation="0 90 0" depth="0.1" height="3" width="6" color="#f2d0d0" shadow="receive:true"></a-box>
   <a-box position="3 1.5 0" rotation="0 90 0" depth="0.1" height="3" width="6" color="#f2d0d0" shadow="receive:true"></a-box>
-
   <!-- Window -->
   <a-box position="0 1.5 -2.95" width="2" height="1.5" depth="0.05" color="#88ccff" opacity="0.6" shadow="false"></a-box>
-
   <!-- Table -->
   <a-box position="0 0.85 0" width="1.5" depth="1.5" height="0.1" color="#8B5A2B" shadow="receive:true"></a-box>
   <a-box position="-0.65 0.4 -0.65" width="0.1" depth="0.1" height="0.7" color="#5A3A1A" shadow="receive:true"></a-box>
   <a-box position="0.65 0.4 -0.65" width="0.1" depth="0.1" height="0.7" color="#5A3A1A" shadow="receive:true"></a-box>
   <a-box position="-0.65 0.4 0.65" width="0.1" depth="0.1" height="0.7" color="#5A3A1A" shadow="receive:true"></a-box>
   <a-box position="0.65 0.4 0.65" width="0.1" depth="0.1" height="0.7" color="#5A3A1A" shadow="receive:true"></a-box>
-
   <!-- Fishbowl -->
   <a-sphere radius="0.65" position="0 1.2 0" material="color:white;transparent:true;opacity:0.15;metalness:0.9;roughness:0.05"></a-sphere>
   <a-sphere radius="0.6" position="0 1.2 0" material="color:#66ccff;transparent:true;opacity:0.35"></a-sphere>
   <a-cylinder radius="0.55" height="0.08" position="0 0.85 0" color="#e6d3a3"></a-cylinder>
-
   <!-- Plants -->
   <a-cone radius-bottom="0.025" radius-top="0.01" height="0.2" position="-0.15 0.95 0.1" color="#2ecc71" sway="speed:1.2;amount:0.05"></a-cone>
-
  <!-- Treasure Chest -->
 <a-entity position="0.2 1 0.3">
-
   <!-- Chest Base -->
   <a-box
     width="0.3"
@@ -223,7 +200,6 @@ AFRAME.registerComponent('cat-roamer',{
     color="#8B5A2B"
     static-body>
   </a-box>
-
   <!--Open/Close Lid -->
   <a-box
     position="0 0.175 0"
@@ -235,14 +211,11 @@ AFRAME.registerComponent('cat-roamer',{
     static-body
     animation="property: rotation; from: 0 0 0; to: -60 0 0; dir: alternate; loop: true; dur: 2000">
   </a-box>
-
 </a-entity>
-
   <!-- Fish Schools -->
   <a-entity fish-spawner="count:25;species:orange;speed:0.5"></a-entity>
   <a-entity fish-spawner="count:20;species:blue;speed:0.55"></a-entity>
   <a-entity fish-spawner="count:15;species:purple;speed:0.45"></a-entity>
-
   <!-- Cat -->
   <a-entity cat-roamer>
     <!-- Body -->
@@ -260,7 +233,6 @@ AFRAME.registerComponent('cat-roamer',{
     <a-cone radius-bottom="0.025" radius-top="0" height="0.08" position="0.05 0.05 0.38" rotation="0 0 20" color="#555"></a-cone>
     <a-cone radius-bottom="0.025" radius-top="0" height="0.08" position="-0.05 0.05 0.38" rotation="0 0 -20" color="#555"></a-cone>
   </a-entity>
-
 </a-scene>
 </body>
 </html>
